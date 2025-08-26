@@ -17,7 +17,7 @@ prm <- read_csv(here('data','RioMameyesPuenteRoto.csv')) %>%
   clean_names() 
 
 
-prm1 <- prm %>% 
+puenterm <- prm %>% 
   mutate(sample_date = lubridate::ymd(sample_date))
 
 #all_brisley <- brisley_one %>% 
