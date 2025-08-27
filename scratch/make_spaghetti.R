@@ -1,3 +1,6 @@
+# loading in rolling-average-attempt issue
+source()
+
 
 # Loading in packages that may be used
 library(tidyverse)
