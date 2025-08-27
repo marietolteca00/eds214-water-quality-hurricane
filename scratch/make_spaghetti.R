@@ -27,7 +27,7 @@ prm <- read_csv(here('data','RioMameyesPuenteRoto.csv')) %>%
 all_brisley <- rbind(brisley_one, brisley_two, brisley_three, prm)
 
 
-# ways to clean up dataframe with interested     
+# create a clean dataframe by filtering, mutating and group by     
 all_brisley <- all_brisley %>% 
   
   #Using mutate create a column called year, to have only the year
