@@ -1,5 +1,11 @@
 # Water Quality Hurricane Disturbance in Puerto Rico
 
+- wheres data
+- have a descriptions of where information is saved
+- authors
+- where can data be retrieved
+
+
 ## Hurricane Hugo affects during 1989-1999, focused on chemical balances
 
 The goal of this repository to recreate the image from the original reports, with customization in visualization. Here you can find a guide on how the information was gathered, tidy wrangled, and create a reproducible code to try other methods.
