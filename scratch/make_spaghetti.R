@@ -60,33 +60,63 @@ all_brisley <- all_brisley %>%
   
   
 # Creating plots to see if dataframe works and how it looks
+
+# Plot for NH4
 p1 <- ggplot(data= all_brisley, aes(x= sample_date, y=nh4_avg )) + # nh4
-  geom_line(aes(color=sample_id))
+  
+  # plot as line
+  geom_line(aes(linetype=sample_id))+
+  
+  # Add a vertical line to plot
+  geom_vline(xintercept = as.Date("1989-09-22"), linetype = "dashed", color = "red")+
+  
+  # Removing x-axis and removing legend
+  theme(axis.text.x = element_blank(), legend.position = "none")
+
+
 
 p2 <- ggplot(data= all_brisley, aes(x= sample_date, y= ca_avg)) + # ca
-  geom_line(aes(color=sample_id))
+  geom_line(aes(color=sample_id))+
+  geom_vline(xintercept = as.Date("1989-09-22"), linetype = "dashed", color = "red")+
+  labs(x = " ",
+       legend= " ")+
+  theme(axis.text.x = element_blank(), legend.position = c())
 
 p3 <- ggplot(data= all_brisley, aes(x= sample_date, y= mg_avg)) + # mg
-  geom_line(aes(color=sample_id))
+  geom_line(aes(color=sample_id)) +
+  geom_vline(xintercept = as.Date("1989-09-22"), linetype = "dashed", color = "red")+
+  labs(x = " ",
+       legend= " ")+
+  theme(axis.text.x = element_blank(), legend.position = "none")
+
 
 p4 <- ggplot(data= all_brisley, aes(x= sample_date, y=no3_avg ))+ # no3
-  geom_line(aes(color=sample_id))
+  geom_line(aes(color=sample_id))+
+  geom_vline(xintercept = as.Date("1989-09-22"), linetype = "dashed", color = "red")+
+  labs(x = " ",
+       legend= " ")+ 
+  theme(axis.text.x = element_blank(), legend.position = "none")
+
 
 p5 <- ggplot(data= all_brisley, aes(x= sample_date, y= k_avg)) + # k
-  geom_line(aes(color=sample_id))
+  geom_line(aes(color=sample_id))+
+  geom_vline(xintercept = as.Date("1989-09-22"), linetype = "dashed", color = "red")+
+  labs(x = " ",
+       legend= " ")+
+  theme(legend.justification.inside = "top,right")
 
-p6 <- ggplot(data= all_brisley, aes(x= sample_date, y= ph_avg)) + # ph remove?
-  geom_line(aes(color=sample_id))
+
+# p6 <- ggplot(data= all_brisley, aes(x= sample_date, y= ph_avg)) + # ph remove?
+#   geom_line(aes(color=sample_id))+
+#   geom_vline(xintercept = as.Date("1989-09-22"), linetype = "dashed", color = "red")+
+#   labs(x = " ")
 
 #DRAFT - Attempting to make plots in one >>>
 
 
-combine_plots<- (p5/ p4/ p3/ p2/ p1) +
-  
-  # adding vertical line on date of hurrican hugo *(1989-09-22)*
-  geom_vline(xintercept = 1989, linetype = "dashed", color = "red")
+combine_plots<- (p5/ p4/ p3/ p2/ p1)
 
-  
+
 # Printing plots
 print(combine_plots)
 
