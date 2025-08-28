@@ -1,4 +1,5 @@
 
+rm(list = ls())
 # Loading in packages that may be used
 library(tidyverse)
 library(dplyr)
@@ -24,75 +25,83 @@ prm <- read_csv(here('data','RioMameyesPuenteRoto.csv')) %>%
 
 #use rbind instead of full join. This will allow each row to be treated individually instead of a key
 # Joining all csv's into one dataframe
-all_brisley1 <- rbind(brisley_one, brisley_two, brisley_three, prm)
+all_brisley <- rbind(brisley_one, brisley_two, brisley_three, prm)
+
 
 
 # create a clean dataframe by filtering, mutating and group by     
-all_brisley1 <- all_brisley1 %>% 
+all_brisley1 <- all_brisley %>% 
+  
+  # Adding sample_dates as usable dates when using functions
+  #all_brisley1$sample_date <- as.Date(all_brisley$sample_date) %>% 
+  
+  # Selecting columns that I am interested in.
+  select(sample_id, sample_date, no3_n, k, mg, ca, nh4_n) %>% 
+  
   
   #Using mutate create a column called year, to have only the year
   mutate(year = lubridate::year(sample_date)) %>% 
   
+  
   #Using filter, grab the dates interested in before and after events
   filter(year >= 1988 & year <= 1994) %>% 
   
+  
   # Arrange by sample_date to have them in order
-  arrange(sample_date) %>% 
-  
-  # Remove these columns from the original dataframe
-  select(-don:-don_code)
+  arrange(sample_date)
 
-all_brisley1 %>% 
-  
-  
-  #group by sample_id
-  group_by(sample_id) %>%
-  
-  
-  # Creating a column for rolling output, 
-  # ca
-  mutate(all_brisley1$ca_rolling <- sapply( 
-    all_brisley$sample_date,
+
+
+#is.na(all_brisley1$ca)
+
+
+# Sourcing Rolling Average
+source(here("R","Rolling_average.R"))
+
+# Try using the moving_average function created
+
+# ca
+all_brisley1$ca <- sapply(
+    all_brisley1$sample_date,
     moving_average,
     dates = all_brisley1$sample_date,
     conc = all_brisley1$ca,
-    win_size_wks = 9))
+    win_size_wks = 9)
 
-# 
-# #no3_n
-# all_brisley$no3_rolling <- sapply( 
-#   all_brisley$sample_date,
-#   moving_average,
-#   dates = all_brisley$sample_date,
-#   conc = all_brisley$no3_n,
-#   win_size_wks = 9)
-# 
-# 
-# # k
-# all_brisley$k_rolling <- sapply(  
-#   all_brisley$sample_date,
-#   moving_average,
-#   dates = all_brisley$sample_date,
-#   conc = all_brisley$k,
-#   win_size_wks = 9)
-# 
-# 
-# # mg
-# all_brisley$mg_rolling <- sapply( 
-#   all_brisley$sample_date,
-#   moving_average,
-#   dates = all_brisley$sample_date,
-#   conc = all_brisley$mg,
-#   win_size_wks = 9)
-# 
-# 
-# # nh4
-# all_brisley$nh4_n_rolling <- sapply( 
-#   all_brisley$sample_date,
-#   moving_average,
-#   dates = all_brisley$sample_date,
-#   conc = all_brisley$nh4_n,
-#   win_size_wks = 9)
+# no3_n
+all_brisley1$no3 <- sapply(
+  all_brisley1$sample_date,
+  moving_average,
+  dates = all_brisley1$sample_date,
+  conc = all_brisley1$no3_n,
+  win_size_wks = 9)
+
+
+# k
+all_brisley1$k <- sapply(
+  all_brisley1$sample_date,
+  moving_average,
+  dates = all_brisley1$sample_date,
+  conc = all_brisley1$k,
+  win_size_wks = 9)
+
+
+# mg
+all_brisley1$mg <- sapply(
+  all_brisley1$sample_date,
+  moving_average,
+  dates = all_brisley1$sample_date,
+  conc = all_brisley1$mg,
+  win_size_wks = 9)
+
+
+# nh4
+all_brisley1$nh4_n <- sapply(
+  all_brisley1$sample_date,
+  moving_average,
+  dates = all_brisley1$sample_date,
+  conc = all_brisley1$nh4_n,
+  win_size_wks = 9)
 
 
 # REMOVE ?
@@ -112,59 +121,63 @@ all_brisley1 %>%
   
 # Creating plots to see if dataframe works and how it looks
 
-# Plot for NH4
-p1 <- ggplot(data= all_brisley, aes(x= sample_date, y=nh4_avg )) + # nh4
+# Plot for NH4- ITS NOT WORKING :(
+p1 <- ggplot(data= all_brisley1, aes(x= sample_date, y=nh4_n )) + # nh4
   
   # plot as line
-  geom_line(aes(linetype=sample_id))+
-  
+  geom_line(aes(linetype = sample_id)) + # sample_id does not auto populate
+
   # Add a vertical line to plot
   geom_vline(xintercept = as.Date("1989-09-22"), linetype = "dashed", color = "red")+
+  labs(x = "Year",
+       y = "NH4") +
+  theme_bw()
   
   # Removing x-axis and removing legend
-  theme(axis.text.x = element_blank(), legend.position = "none")
+  #theme(axis.text.x = element_blank(), legend.position = "none")
+
+print(p1)
 
 
 
-p2 <- ggplot(data= all_brisley, aes(x= sample_date, y= ca_avg)) + # ca
-  geom_line(aes(color=sample_id))+
+p2 <- ggplot(data= all_brisley1, aes(x = sample_date, y = ca)) + # ca
+  geom_line(aes(linetype = sample_id))+
   geom_vline(xintercept = as.Date("1989-09-22"), linetype = "dashed", color = "red")+
   labs(x = " ",
+       y = "ca",
        legend= " ")+
   theme(axis.text.x = element_blank(), legend.position = c())
 
-p3 <- ggplot(data= all_brisley, aes(x= sample_date, y= mg_avg)) + # mg
-  geom_line(aes(color=sample_id)) +
+print(p2)
+
+p3 <- ggplot(data= all_brisley1, aes(x= sample_date, y= mg)) + # mg
+  geom_line(aes(linetype=sample_id)) +
   geom_vline(xintercept = as.Date("1989-09-22"), linetype = "dashed", color = "red")+
   labs(x = " ",
        legend= " ")+
   theme(axis.text.x = element_blank(), legend.position = "none")
 
 
-p4 <- ggplot(data= all_brisley, aes(x= sample_date, y=no3_avg ))+ # no3
-  geom_line(aes(color=sample_id))+
+p4 <- ggplot(data= all_brisley1, aes(x= sample_date, y=no3_n))+ # no3
+  geom_line(aes(linetype=sample_id))+
   geom_vline(xintercept = as.Date("1989-09-22"), linetype = "dashed", color = "red")+
   labs(x = " ",
        legend= " ")+ 
   theme(axis.text.x = element_blank(), legend.position = "none")
 
 
-p5 <- ggplot(data= all_brisley, aes(x= sample_date, y= k_avg)) + # k
-  geom_line(aes(color=sample_id))+
+p5 <- ggplot(data= all_brisley1, aes(x= sample_date, y= k)) + # k
+  geom_line(aes(linetype=sample_id))+
   geom_vline(xintercept = as.Date("1989-09-22"), linetype = "dashed", color = "red")+
   labs(x = " ",
        legend= " ")+
   theme(legend.justification.inside = "top,right")
 
+print(p5)
 
-# p6 <- ggplot(data= all_brisley, aes(x= sample_date, y= ph_avg)) + # ph remove?
-#   geom_line(aes(color=sample_id))+
-#   geom_vline(xintercept = as.Date("1989-09-22"), linetype = "dashed", color = "red")+
-#   labs(x = " ")
+
 
 #DRAFT - Attempting to make plots in one >>>
-
-
 combine_plots<- (p5/ p4/ p3/ p2/ p1)
 
 
@@ -173,14 +186,14 @@ print(combine_plots)
 
 
 
-
-#9weeks breaks! 
-week_brisley <- all_brisley %>% 
-  filter(sample_date >= "1989-09-22",
-        year <= "1994") %>% 
-  arrange(sample_date) %>% 
-  group_by(sample_date) %>% 
-  mutate(average_mg= rollmean(mg, 9,fill=NA, align='right')) # stopped at rolling mean
+# 
+# #9weeks breaks! 
+# week_brisley <- all_brisley %>% 
+#   filter(sample_date >= "1989-09-22",
+#         year <= "1994") %>% 
+#   arrange(sample_date) %>% 
+#   group_by(sample_date) %>% 
+#   mutate(average_mg= rollmean(mg, 9,fill=NA, align='right')) # stopped at rolling mean
 
 #DRAFT - Attemping to make plots in one >>>
 
