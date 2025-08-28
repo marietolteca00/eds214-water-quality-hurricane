@@ -1,4 +1,15 @@
+---
+title: "paper"
+format: html
+---
 
+## Background
+
+
+## Data 
+Start loading in libraries and load in data from EDI website provided in the README.md file. While loading in CSV files add clean_names to make all columns lowercase.
+```{r}
+rm(list=ls())
 # Loading in packages that may be used
 library(tidyverse)
 library(dplyr)
@@ -6,6 +17,8 @@ library(janitor)
 library(here)
 library(zoo)
 library(patchwork)
+
+source(here("R","Rolling_average.R"))
 
 
 # Reading in CSV files and assigning into dataframes
@@ -20,16 +33,19 @@ brisley_three <- read_csv(here('data', 'QuebradaCuenca3-Bisley.csv')) %>%
 
 prm <- read_csv(here('data','RioMameyesPuenteRoto.csv')) %>% 
   clean_names() 
+```
 
 
+## Methods
+For methods the approach taken was to combine all four dataframes into one to and start arrange, filtering, and selecting. As well as use a function created for all concentrations. 
+```{r}
 #use rbind instead of full join. This will allow each row to be treated individually instead of a key
 # Joining all csv's into one dataframe
-all_brisley1 <- rbind(brisley_one, brisley_two, brisley_three, prm)
-
+all_brisley <- rbind(brisley_one, brisley_two, brisley_three, prm)
 
 # create a clean dataframe by filtering, mutating and group by     
-all_brisley1 <- all_brisley1 %>% 
-  
+all_brisley1 <- all_brisley %>% 
+
   #Using mutate create a column called year, to have only the year
   mutate(year = lubridate::year(sample_date)) %>% 
   
@@ -41,24 +57,18 @@ all_brisley1 <- all_brisley1 %>%
   
   # Remove these columns from the original dataframe
   select(-don:-don_code)
+  
+    
 
-all_brisley1 %>% 
-  
-  
-  #group by sample_id
-  group_by(sample_id) %>%
-  
-  
-  # Creating a column for rolling output, 
-  # ca
-  mutate(all_brisley1$ca_rolling <- sapply( 
-    all_brisley$sample_date,
+# Check to see if this will work for Ca rolling column being created. 
+all_brisley1$ca_rolling <- sapply( 
+    all_brisley1$sample_date,
     moving_average,
     dates = all_brisley1$sample_date,
     conc = all_brisley1$ca,
-    win_size_wks = 9))
+    win_size_wks = 9)
 
-# 
+# Attempt at creating for the rest of the concentrations
 # #no3_n
 # all_brisley$no3_rolling <- sapply( 
 #   all_brisley$sample_date,
@@ -95,21 +105,12 @@ all_brisley1 %>%
 #   win_size_wks = 9)
 
 
-# REMOVE ?
-  # Grab the running average on the interested chemicals
-  # mutate(nh4_avg= rollmean(nh4_n, k= 1 , fill=NA)) %>%
-  # mutate(ca_avg= rollmean(ca, k= 1 , fill=0)) %>%
-  # mutate(mg_avg= rollmean(mg, k= 1, fill=0)) %>%
-  # mutate(no3_avg= rollmean(no3_n, k= 9 , fill=0)) %>%
-  # mutate(k_avg= rollmean(k, k= 1 , fill=0)) %>% 
-  # mutate(ph_avg=rollmean(p_h, k=1, fill=0))
-  
-  #ungroup the group_by
-    #ungroup() %>% 
+```
 
-  
-  
-  
+
+# Results
+When calculating the results for the concentrations interested, a plot was created for each concentration and then combined into one plot. The results will print out on the plot pane.
+```{r}
 # Creating plots to see if dataframe works and how it looks
 
 # Plot for NH4
@@ -125,70 +126,44 @@ p1 <- ggplot(data= all_brisley, aes(x= sample_date, y=nh4_avg )) + # nh4
   theme(axis.text.x = element_blank(), legend.position = "none")
 
 
-
+# Replicate the steps above for the rest of the interested concentrations.
 p2 <- ggplot(data= all_brisley, aes(x= sample_date, y= ca_avg)) + # ca
   geom_line(aes(color=sample_id))+
   geom_vline(xintercept = as.Date("1989-09-22"), linetype = "dashed", color = "red")+
   labs(x = " ",
        legend= " ")+
   theme(axis.text.x = element_blank(), legend.position = c())
-
-p3 <- ggplot(data= all_brisley, aes(x= sample_date, y= mg_avg)) + # mg
-  geom_line(aes(color=sample_id)) +
-  geom_vline(xintercept = as.Date("1989-09-22"), linetype = "dashed", color = "red")+
-  labs(x = " ",
-       legend= " ")+
-  theme(axis.text.x = element_blank(), legend.position = "none")
-
-
-p4 <- ggplot(data= all_brisley, aes(x= sample_date, y=no3_avg ))+ # no3
-  geom_line(aes(color=sample_id))+
-  geom_vline(xintercept = as.Date("1989-09-22"), linetype = "dashed", color = "red")+
-  labs(x = " ",
-       legend= " ")+ 
-  theme(axis.text.x = element_blank(), legend.position = "none")
-
-
-p5 <- ggplot(data= all_brisley, aes(x= sample_date, y= k_avg)) + # k
-  geom_line(aes(color=sample_id))+
-  geom_vline(xintercept = as.Date("1989-09-22"), linetype = "dashed", color = "red")+
-  labs(x = " ",
-       legend= " ")+
-  theme(legend.justification.inside = "top,right")
-
-
-# p6 <- ggplot(data= all_brisley, aes(x= sample_date, y= ph_avg)) + # ph remove?
+# 
+# p3 <- ggplot(data= all_brisley, aes(x= sample_date, y= mg_avg)) + # mg
+#   geom_line(aes(color=sample_id)) +
+#   geom_vline(xintercept = as.Date("1989-09-22"), linetype = "dashed", color = "red")+
+#   labs(x = " ",
+#        legend= " ")+
+#   theme(axis.text.x = element_blank(), legend.position = "none")
+# 
+# 
+# p4 <- ggplot(data= all_brisley, aes(x= sample_date, y=no3_avg ))+ # no3
 #   geom_line(aes(color=sample_id))+
 #   geom_vline(xintercept = as.Date("1989-09-22"), linetype = "dashed", color = "red")+
-#   labs(x = " ")
-
-#DRAFT - Attempting to make plots in one >>>
-
-
-combine_plots<- (p5/ p4/ p3/ p2/ p1)
-
-
-# Printing plots
-print(combine_plots)
-
-
-
-
-#9weeks breaks! 
-week_brisley <- all_brisley %>% 
-  filter(sample_date >= "1989-09-22",
-        year <= "1994") %>% 
-  arrange(sample_date) %>% 
-  group_by(sample_date) %>% 
-  mutate(average_mg= rollmean(mg, 9,fill=NA, align='right')) # stopped at rolling mean
-
-#DRAFT - Attemping to make plots in one >>>
+#   labs(x = " ",
+#        legend= " ")+ 
+#   theme(axis.text.x = element_blank(), legend.position = "none")
+# 
+# 
+# p5 <- ggplot(data= all_brisley, aes(x= sample_date, y= k_avg)) + # k
+#   geom_line(aes(color=sample_id))+
+#   geom_vline(xintercept = as.Date("1989-09-22"), linetype = "dashed", color = "red")+
+#   labs(x = " ",
+#        legend= " ")+
+#   theme(legend.justification.inside = "top,right")
 
 
-#combine_plots<- no3_avg + nh4_avg
-#print(combine_plots)
+# Combine plots made and check to see if output looks correct.
+# combine_plots<- (p5/ p4/ p3/ p2/ p1)
+# 
+# 
+# # Printing plots to see on pane
+# print(combine_plots)
+```
 
-
-
-
-
+With the results we can see that all concentrations fluctuated within a decade after the Hurricane Hugo
