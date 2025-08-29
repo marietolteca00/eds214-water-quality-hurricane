@@ -28,7 +28,7 @@ NOT YET. A function was created in the R folder with the name rolling_average.R.
 NOT YET. It has some information, but can still add more information and be more descriptive one the README.md
 
 #####  The README includes a flowchart and text explaining how the analysis works
-NOT YET. The README has the beginning of a flow chart, it is not yet finished. It has vague information.
+NOT YET. The README has a flowchart, but it could be cleaned up.
 
 #####  The code is appropriately commented
 NOT Yet. I have most of it commented but some areas can use more commenting, as well as the new code i may need to add ro fix.
