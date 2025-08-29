@@ -1,5 +1,5 @@
 ---
-title: "Marie's Reproducibility"
+title: "EDS - 214: Marie's Reproducibility"
 format:
   html: 
     output-file: "index.html"
