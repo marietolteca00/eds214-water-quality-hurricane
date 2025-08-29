@@ -1,4 +1,9 @@
-source("intermediate_results/data_import.R")
+# Sourcing the results from the intermediate folder, use data_import.R
+source(here("intermediate_results","data_import.R"))
+
+library(tidyverse)
+library(dplyr)
+library(here)
 
 #use rbind instead of full join. This will allow each row to be treated individually instead of a key
 # Joining all csv's into one dataframe

@@ -1,5 +1,7 @@
 #Over the course of this week, you’re going to reproduce figure 3 from Schaefer et al. (2000). Your goal for today is to gather the data, make an analysis plan, and write the code to process and visualize the data. By the end of the week, you will organize your analysis and document your workflow. Even better, you’ll do it collaboratively and prepare it to run on a high-performance cluster.
 
+# Load in libraries for this script
+
 library(tidyverse)
 library(dplyr)
 library(janitor)
@@ -25,6 +27,3 @@ prm <- read_csv(here('data','RioMameyesPuenteRoto.csv')) %>%
 
   
   
-all_brisley <- brisley_one %>% 
-  left_join(brisley_one, brisley_two, by= "sample_id", relationship = "many-to-many")
-

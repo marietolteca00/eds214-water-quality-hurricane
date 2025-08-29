@@ -54,7 +54,9 @@ all_brisley1 <- all_brisley %>%
   pivot_longer(cols = c(nh4_n, no3_n, k, mg, ca), 
                names_to = "stream_ion", # column title
                values_to = "concentration") #values of each concentration
-  
+
+# Sourcing Rolling Average
+source(here("R","Rolling_average.R"))  
   
 # Calculating rolling average
 rolling_avg <- all_brisley1 %>% 
@@ -67,17 +69,11 @@ rolling_avg <- all_brisley1 %>%
     win_size_wks = 9)) %>% 
   ungroup()
 
+# this would work if pivot_long() was not applied
 # across(all_brisley1[["concentration"]], ~moving_average(dates = all_brisley1[["sample_date"]],conc = all_brisley1[["concentration"]], win_size_wks = 9))
   
 
 
-
-
-
-
-
-# Sourcing Rolling Average
-source(here("R","Rolling_average.R"))
 
 # Try using the moving_average function created
 
