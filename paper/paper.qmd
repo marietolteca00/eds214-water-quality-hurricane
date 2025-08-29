@@ -1,8 +1,11 @@
 ---
-title: "paper"
-format: html
+title: "Marie's Reproducibility"
+format:
+  html: 
+    output-file: "index.html"
 editor_options: 
   chunk_output_type: console
+
 ---
 
 ## Background
@@ -10,87 +13,19 @@ Following the water quality after hurricane hugo occurred in September 22, 1989.
 
 
 ## Data 
-Start loading in libraries and load in data from EDI website provided in the README.md file. While loading in CSV files add clean_names to make all columns lowercase with the package janitor.
-```{r, warning=FALSE, message=FALSE}
-
-# If working on workbench or do not have these packages installed use this in the Console.
-#install.packages(c("tidyverse", "dplyr", "janitor", "here" ))
-
-
-# Loading in packages that may be used
-library(tidyverse)
-library(dplyr)
-library(janitor)
+Start loading in libraries and load in data from EDI website provided in the README.md file. To view the way the data was imported check the outputs folder, 'data_imports.RDS'
+```{r, message=FALSE}
 library(here)
+library(tidyverse)
 
-# This is a base R function, no need to install or library :)
-source(here("R","Rolling_average.R"))
-
-
-# Reading in CSV files and assigning into dataframes
-brisley_one <- read_csv(here('data','QuebradaCuenca1-Bisley.csv')) %>% 
-  clean_names()
-
-brisley_two <- read_csv(here('data', 'QuebradaCuenca2-Bisley.csv')) %>% 
-  clean_names()
-
-brisley_three <- read_csv(here('data', 'QuebradaCuenca3-Bisley.csv')) %>% 
-  clean_names()
-
-prm <- read_csv(here('data','RioMameyesPuenteRoto.csv')) %>% 
-  clean_names() 
+data_imports <- readRDS(here::here("outputs", "data_imports.RDS"))
 ```
 
 
 ## Methods
-For methods the approach taken was to combine all four dataframes into one to and start selecting, mutating, filtering, arrange, and pivot longer.  As well as use a function created for all concentrations (Rolling_average.R) saved under the R folder. 
+For methods the approach taken was to combine all four dataframes into one to and start selecting, mutating, filtering, arrange, and pivot longer. This is saved on the *intermediate results folder*, use *'data_imports.R'* to view how the data was cleaned. As well as use a function created for all concentrations (Rolling_average.R) saved under the R folder. 
 ```{r}
-#use rbind instead of full join. This will allow each row to be treated individually instead of a key
-# Joining all csv's into one dataframe
-all_brisley <- rbind(brisley_one, brisley_two, brisley_three, prm) 
-
-
-# Create a clean dataframe by filtering, mutating and group by     
-all_brisley1 <- all_brisley %>% 
-  
-  
-  # Selecting columns that I am interested in.
-  select(sample_id, sample_date, no3_n, k, mg, ca, nh4_n) %>% 
-  
-  
-  #Using mutate create a column called year, to have only the year
-  mutate(year = lubridate::year(sample_date)) %>% 
-  
-  
-  #Using filter, grab the dates interested in before and after events
-  filter(year >= 1988 & year <= 1994) %>% 
-  
-  
-  # Arrange by sample_date to have them in order
-  arrange(sample_date) %>% 
-  
-  
-  # Pivot_longer to have data together within a column
-  pivot_longer(cols = c(nh4_n, no3_n, k, mg, ca), # inputting columns we want to add in one
-               
-               names_to = "stream_ion", # column title
-               
-               values_to = "concentration") #values of each concentration
-
-
-# Calculating rolling average
-rolling_avg <- all_brisley1 %>% 
-  group_by(sample_id, stream_ion) %>% 
-  mutate(rollin_avg = sapply(
-    sample_date,
-    # using function made from 'Rolling_average.R'
-    moving_average, 
-    dates = sample_date,
-    conc = concentration,
-    win_size_wks = 9)) %>% 
-  
-  ungroup()
-
+rolling_avg <- readRDS(here::here("outputs", "rolling_avg_1.RDS"))
 ```
 
 
@@ -130,12 +65,11 @@ p1 <- ggplot(data= rolling_avg, aes(x= sample_date, y=concentration )) + # nh4
   theme(strip.position = "outside",
     plot.title = element_text(hjust = 0.5),
     plot.subtitle = element_text(hjust = 0.5),
-    strip.text = element_text(size =10))
+    strip.text = element_text(size =8))
 
 
 # Printing plot to view
 print(p1)
-
 
 # Save the Plot as a PNG
 ggsave(here("figs", "Concentrations_plot.png"),

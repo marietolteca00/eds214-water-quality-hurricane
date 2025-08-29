@@ -6,27 +6,18 @@ The goal of this repository is to recreate the image from the original report fi
 
 Here you can find a guide on how the information was gathered, uploaded, tidy wrangled, and create a reproducible code to try other methods.
 
-# Retrievable EDI Repository
+# 1. Data
 
 The data was read into R studio, where the data was downloaded using the EDI repository. [<https://portal.edirepository.org/nis/mapbrowse?packageid=knb-lter-luq.20.4923064>].
 
-The citation for this paper is Schaefer DouglasA, McDowell WH, Scatena FN, Asbury CE. Effects of hurricane disturbance on stream water concentrations and fluxes in eight tropical forest watersheds of the Luquillo Experimental Forest, Puerto Rico. Journal of Tropical Ecology. 2000;16(2):189-207. <doi:10.1017/S0266467400001358>.
+**Citation** for this paper is Schaefer DouglasA, McDowell WH, Scatena FN, Asbury CE. Effects of hurricane disturbance on stream water concentrations and fluxes in eight tropical forest watersheds of the Luquillo Experimental Forest, Puerto Rico. Journal of Tropical Ecology. 2000;16(2):189-207. <doi:10.1017/S0266467400001358>.
 
-**Author**: Marie Tolteca (Github = marietolteca00, Email: marietolteca@ucsb.edu), University Stanta Barbara, Bren School of Environmental Data Science, Student Cohort 2025-2026.
+**Author**: Marie Tolteca (Github = marietolteca00, Email: [marietolteca\@ucsb.edu](mailto:marietolteca@ucsb.edu){.email}), University Stanta Barbara, Bren School of Environmental Data Science, Student Cohort 2025-2026.
 
+# Analysis
 
-# Flowchart- Thought Process
+![Flowchart- Thought Process](IMG_0204.jpg)
 
-Libaries and Install Packages required for this repository are: tidyverse, dplyr, janitor, and here.
+To load in the data I uploaded the csv's I was interested in and to find the script on how it can be found in the intermediate results folder, use 'data_cleaning.R' and 'data_import.R'. After completing these steps I created a function saved under the R folder, called ' Rolling_average.R'. This was used in the the data_cleaning script. All the outputs can be found in the 'outputs' folder.
 
--   Start by reading in the downloaded csv's from the EDI repository and assigning them into a variable for Brisley Quebrada 1-3 and Rio Mameyes Puente Roto.
-
--   Once those csv are stored into a variable use 'rbind()' to create a combined join on all datasets. This will be stored into another variable with its combined dataframes.
-
--   Starting the tidy wrangling proccess by removing columns that will not be needed, filtering by date, and grouping by.
-
--   Create a function on a separate R.script. Here you will create a funciton for rolling average that will be used for each concentration.
-
--   After the function is complete and run, use it on a separate original R script and assigned it to each concentration that a rolling average is needed.
-
--   Finally, a plot will be created for all concentrations. After each plot is created, combined the plots and assign them into a different vector, this will store plots and configure a plot with all the information.
+Once, this was all ran correctly, a plot was created to mirror the figure 3 in the research paper.

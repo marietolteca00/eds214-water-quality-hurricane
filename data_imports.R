@@ -12,7 +12,21 @@ library(here)
 # view(raw_data)
 # skimr::skim(raw_data)
 
-## READ In DATA: 
+```{r, warning=FALSE, message=FALSE}
+
+# If working on workbench or do not have these packages installed use this in the Console.
+#install.packages(c("tidyverse", "dplyr", "janitor", "here" ))
+
+
+# Loading in packages that may be used
+library(tidyverse)
+library(dplyr)
+library(janitor)
+library(here)
+
+
+
+# Reading in CSV files and assigning into dataframes
 brisley_one <- read_csv(here('data','QuebradaCuenca1-Bisley.csv')) %>% 
   clean_names()
 
@@ -26,4 +40,6 @@ prm <- read_csv(here('data','RioMameyesPuenteRoto.csv')) %>%
   clean_names() 
 
   
+# Save 
+saveRDS(rolling_avg, file = here("outputs", "data_imports.RDS"))
   
